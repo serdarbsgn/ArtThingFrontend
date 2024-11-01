@@ -19,8 +19,7 @@
             <div v-for="comment in parsedComments" :key="comment.id" :id="`comment-${comment.id}`" class="comment">
                 <br>
                 <div><strong
-                        :class="{ 'comment-text': comment.parent_id === 0, 'reply-text': comment.parent_id !== 0 }">
-                        {{ comment.content }}
+                        :class="{ 'comment-text': comment.parent_id === 0, 'reply-text': comment.parent_id !== 0 }" v-html="comment.content">
                     </strong><br>
                     <i class="divider-text"> by </i><i class="username">{{ comment.username }}</i>
                     <i class="divider-text"> at </i><i class="timestamp">{{ new
@@ -45,7 +44,7 @@
                     <div :id="`reply-input-${comment.id}`" class="reply-input"
                         v-show="comment.replyFieldText === 'Hide'">
                         <textarea :id="`reply-content-${comment.id}`" placeholder="Type your comment here..."
-                            @input="adjustTextareaHeight($event)" rows="1" class="dark-textarea"></textarea>
+                            @input="adjustTextareaHeight($event)" rows="1" class="dark-textarea" v-focus="[comment.id,currentReplyFocus]" ></textarea>
                         <div class="button-container">
                             <button @click.prevent="submitReply(comment)" class="dark-button">Reply</button>
                         </div>
@@ -68,7 +67,20 @@
 </template>
 
 
+<script setup>
+import { nextTick } from 'vue';
+const focusDirective = {
+    updated(el, binding) {
+        if (binding.value&&binding.value[0]==binding.value[1]) {
+            nextTick(() => {
+                el.focus();
+            });
+        }
+    }
+};
 
+const vFocus = focusDirective;
+</script>
 
 <script>
 import { backendLayersAppAddress } from '@/config';
@@ -94,7 +106,8 @@ export default {
             errorMessage: '',
             errorCode: 0,
             parsedComments: [],
-            isLoading: true
+            isLoading: true,
+            currentReplyFocus: null
         };
     },
     watch: {
@@ -130,6 +143,7 @@ export default {
         },
         toggleReplyField(comment) {
             comment.replyFieldText = comment.replyFieldText === "Reply" ? "Hide" : "Reply";
+            this.currentReplyFocus = comment.id;
         },
         adjustTextareaHeight(event) {
             const textarea = event.target;

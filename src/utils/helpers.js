@@ -49,9 +49,9 @@ export function removeUserinfo(){
     sessionStorage.removeItem('picture');
 }
 
-export async function getUserStats() {
-    const statsKey = 'userStats';
-    const timestampKey = 'userStatsTimestamp';
+export async function getUserProjectStats() {
+    const statsKey = 'userProjectStats';
+    const timestampKey = 'userProjectStatsTimestamp';
   
     const storedStats = JSON.parse(sessionStorage.getItem(statsKey));
     const storedTimestamp = sessionStorage.getItem(timestampKey);

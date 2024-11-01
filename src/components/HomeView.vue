@@ -1,5 +1,6 @@
 <template>
   <div class="centered-content">
+    <HeaderView v-if="!isLoading" :parentView="$route.name" @logout="logout"/>
     <p v-if="isLoading">Loading...</p>
     <div v-if="username">
       <h1>Welcome {{ username }}, to the Home Page!</h1>
@@ -33,9 +34,11 @@
 
 <script>
 import { backendMainAppAddress } from '@/config';
-import { getUserinfo, removeUserinfo, getUserStats, removeUserstats } from '@/utils/helpers';
+import { getUserinfo, removeUserinfo, getUserProjectStats, removeUserstats } from '@/utils/helpers';
 import axios from 'axios';
+import HeaderView from './HeaderView.vue';
 export default {
+  components: { HeaderView, },
   data() {
     return {
       username: '',
@@ -60,7 +63,7 @@ export default {
           this.username = userInfo.username;
           this.picture = userInfo.picture;
         }
-        const userStats = await getUserStats();
+        const userStats = await getUserProjectStats();
         if (userStats) {
           this.projectCount = userStats.projectCount;
           this.projectKarmaTotal = userStats.projectKarmaTotal;

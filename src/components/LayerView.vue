@@ -25,7 +25,7 @@
       </div>
       <div class="content-container" :class="{ vertical: isVertical }"
         :style="{ maxHeight: getContentMaxHeight() + 'px' }">
-        <h2 class="content">{{ content }}</h2>
+        <h2 class="content" v-html="content"></h2>
         <br>
         <h3>at: {{ created_at }}</h3> <br>
         <h1>Comments</h1><br>
@@ -117,7 +117,7 @@ export default {
             Authorization: `${token}`
           },
         };
-        const response = await axios.get(`${backendLayersAppAddress}/info/${this.projectName}`, config);
+        const response = await axios.get(`${backendLayersAppAddress}/project/${this.projectName}`, config);
         this.layer_pos = response.data.images.map(item => {
           const [, x, y] = item.replace('.png', '').split('_').map(Number);
           return [x, y];
