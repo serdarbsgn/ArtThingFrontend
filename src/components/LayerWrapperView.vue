@@ -1,4 +1,5 @@
 <template>
+    <HeaderView v-if="!isLoading" />
     <div class="perspective">
         <div style="flex-direction: row; display: flex;">
             <a href="#" @click.prevent="switchProjectBackward()">Previous Page</a>
@@ -8,7 +9,7 @@
         <transition name="page-transition" @before-enter="beforeEnter" @after-enter="afterEnter"
             @before-leave="beforeLeave">
             <div v-if="!isLoading" class="page" :key="projectName">
-                <LayerView v-if="projectName" :projectName="projectName" />
+                <LayerView v-if="projectName" :projectName="projectName" :headerHide="true" />
                 <div v-if="currentProjectIndex === -1" class="cover-page">
                     <h2>{{ creatorUsername }}'s ArtBook</h2>
                     <div v-if="isLoading">Loading projects...</div>
@@ -27,10 +28,10 @@
 import LayerView from './LayerView.vue';
 import axios from 'axios';
 import { backendLayersAppAddress, backendMainAppAddress } from '@/config';
-
+import HeaderView from './HeaderView.vue';
 export default {
     components: {
-        LayerView,
+        LayerView,HeaderView
     },
     props: {
         creatorUsername: {

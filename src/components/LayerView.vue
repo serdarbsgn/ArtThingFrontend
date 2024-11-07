@@ -1,5 +1,5 @@
 <template>
-  <HeaderView v-if="!isLoading" />
+  <HeaderView v-if="!headerHide" />
   <p v-if="isLoading">Loading...</p>
   <div v-if="!isLoading">
     <h1><i>{{ title }}</i> by <a href=# @click="navigateToCreator(creator)">{{ creator }}</a></h1>
@@ -50,7 +50,10 @@ export default {
     projectName: {
       type: String,
       required: true,
-    },
+    },headerHide: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
