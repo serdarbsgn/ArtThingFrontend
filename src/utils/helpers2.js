@@ -2,7 +2,7 @@
 import { ref, watch } from 'vue';
 import axios from 'axios';
 import { backendMainAppAddress } from '@/config';
-import { backendLayersAppAddress } from '@/config';
+
 // Define reactive variables
 export const username = ref(sessionStorage.getItem('username') || '');
 export const picture = ref(sessionStorage.getItem('picture') || '');
@@ -58,9 +58,9 @@ export function logout(){
 watch(username, (newVal) => sessionStorage.setItem('username', newVal));
 watch(picture, (newVal) => sessionStorage.setItem('picture', newVal));
 
-export async function getUserProjectStats() {
-    const statsKey = 'userProjectStats';
-    const timestampKey = 'userProjectStatsTimestamp';
+export async function getUserMainStats() {
+    const statsKey = 'userMainStats';
+    const timestampKey = 'userMainStatsTimestamp';
   
     const storedStats = JSON.parse(sessionStorage.getItem(statsKey));
     const storedTimestamp = sessionStorage.getItem(timestampKey);
@@ -81,13 +81,13 @@ export async function getUserProjectStats() {
             Authorization: `${token}`,
           },
         };
-        const response = await axios.get(`${backendLayersAppAddress}/userstats`, config);
+        const response = await axios.get(`${backendMainAppAddress}/userstats`, config);
         
         const statsData = {
-          projectCount: response.data.projectCount,
-          projectKarmaTotal: response.data.projectKarmaTotal,
-          projectCommentCount: response.data.projectCommentCount,
-          projectCommentKarmaTotal: response.data.projectCommentKarmaTotal,
+          postCount: response.data.scores.post_count,
+          postKarmaTotal: response.data.scores.post_karma,
+          commentCount: response.data.scores.comment_count,
+          commentKarmaTotal: response.data.scores.comment_karma,
         };
         sessionStorage.setItem(statsKey, JSON.stringify(statsData));
         sessionStorage.setItem(timestampKey, Date.now().toString());
@@ -95,14 +95,14 @@ export async function getUserProjectStats() {
       } catch (error) {
         if(error.status === 401){
             removeUserinfo();
-            removeUserProjectstats();
+            removeUserstats();
             sessionStorage.removeItem('loginJwt');
         }
         return null;
       }
     }
   }
-export function removeUserProjectstats(){
-    sessionStorage.removeItem('userProjectStats');
-    sessionStorage.removeItem('userProjectStatsTimestamp');
+export function removeUserstats(){
+    sessionStorage.removeItem('userStats');
+    sessionStorage.removeItem('userStatsTimestamp');
 }

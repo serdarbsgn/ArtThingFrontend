@@ -16,45 +16,35 @@
                     <button @click.prevent="submitReply()" class="dark-button">Comment</button>
                 </div>
             </template>
-            <div v-if="showDeleteConfirm" class="modal-overlay">
-                <div class="modal-content" ref="modalContent" v-on:blur="cancelDelete" tabindex="0">
-                    <p>Are you sure you want to <strong>delete</strong> this comment?</p>
-                    <br>
-                    <div style="display: flex; justify-content:space-evenly;">
-                        <button class="dark-button" @click="deleteComment">Yes</button>
-                        <button class="dark-button" @click="cancelDelete">No</button>
-                    </div>
-                </div>
-            </div>
             <div v-for="comment in parsedComments" :key="comment.id" :id="`comment-${comment.id}`" class="comment">
                 <br>
-                <div><strong :class="{ 'comment-text': comment.parent_id === 0, 'reply-text': comment.parent_id !== 0 }"
-                        v-html="comment.content">
+                <div><strong
+                        :class="{ 'comment-text': comment.parent_id === 0, 'reply-text': comment.parent_id !== 0 }" v-html="comment.content">
                     </strong><br>
                     <i class="divider-text"> by </i><i class="username">{{ comment.username }}</i>
                     <i class="divider-text"> at </i><i class="timestamp">{{ new
                         Date(comment.changed_at).toLocaleString(undefined, {
-                            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
-                        }) }}</i>
+                            year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) }}</i>
 
-                    <a href="#" :class="['like-button', { active: comment.l_d === 'Like' && username }]"
+                    <a href="#" class="like-link" :class="['like-button', { active: comment.l_d === 'Like' }]"
                         @click.prevent="likeComment(comment)"><span class="material-icons">thumb_up</span></a>
                     <span class="like-count"> {{ comment.likes }} </span>
-                    <a href="#" :class="['dislike-button', { active: comment.l_d === 'Dislike' && username }]"
+                    <a href="#" class="dislike-link" :class="['dislike-button', { active: comment.l_d === 'Dislike' }]"
                         @click.prevent="dislikeComment(comment)"><span class="material-icons">thumb_down</span></a>
-                    <a href="#" class="reply-link" @click.prevent="toggleReplyField(comment)">{{ comment.replyFieldText
-                        }}</a>
+                    <a href="#" class="reply-link"
+                        @click.prevent="toggleReplyField(comment)">{{ comment.replyFieldText }}</a>
 
-                    <template v-if="comment.username === username">
-                        <a href="#" class="delete-link" @click.prevent="confirmDeletePrompt(comment)">Delete</a>
+                    <template v-if="isUserComment(comment.username)">
+                        <a href="#" class="delete-link" @click.prevent="deleteComment(comment.id)">Delete</a>
                     </template>
                 </div>
                 <div>
+
+
                     <div :id="`reply-input-${comment.id}`" class="reply-input"
                         v-show="comment.replyFieldText === 'Hide'">
                         <textarea :id="`reply-content-${comment.id}`" placeholder="Type your comment here..."
-                            @input="adjustTextareaHeight($event)" rows="1" class="dark-textarea"
-                            v-focus="[comment.id, currentReplyFocus]"></textarea>
+                            @input="adjustTextareaHeight($event)" rows="1" class="dark-textarea" v-focus="[comment.id,currentReplyFocus]" ></textarea>
                         <div class="button-container">
                             <button @click.prevent="submitReply(comment)" class="dark-button">Reply</button>
                         </div>
@@ -76,11 +66,12 @@
     </div>
 </template>
 
+
 <script setup>
 import { nextTick } from 'vue';
 const focusDirective = {
     updated(el, binding) {
-        if (binding.value && binding.value[0] == binding.value[1]) {
+        if (binding.value&&binding.value[0]==binding.value[1]) {
             nextTick(() => {
                 el.focus();
             });
@@ -91,12 +82,8 @@ const focusDirective = {
 const vFocus = focusDirective;
 </script>
 
-
-
 <script>
-import { backendMainAppAddress,backendLayersAppAddress } from '@/config';
-import { username } from '@/utils/helpers';
-import { nextTick } from 'vue';
+import { backendLayersAppAddress } from '@/config';
 import axios from 'axios';
 
 export default {
@@ -120,15 +107,12 @@ export default {
             errorCode: 0,
             parsedComments: [],
             isLoading: true,
-            username,
-            showDeleteConfirm: false,
-            commentToDelete: null,
             currentReplyFocus: null
         };
     },
     watch: {
         project_id(newVal) {
-            this.parsedComments = [];
+            this.parsedComments=[];
             this.fetch_replies(this.parent_id, 0);
         },
     },
@@ -223,7 +207,7 @@ export default {
         async likeComment(comment) {
             const config = this.prepare_config(comment.id)
             try {
-                const likeCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/like`, config);
+                const fetchCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/like`, config);
                 const msg = fetchCommentsResponse.data.msg
                 if (msg == "Liked") {
                     comment.likes += 1;
@@ -246,7 +230,7 @@ export default {
         async dislikeComment(comment) {
             const config = this.prepare_config(comment.id)
             try {
-                const dislikeCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/dislike`, config);
+                const fetchCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/dislike`, config);
                 const msg = fetchCommentsResponse.data.msg
                 if (msg == "Disliked") {
                     comment.likes -= 1;
@@ -265,37 +249,13 @@ export default {
                 }
             }
         },
-        async confirmDeletePrompt(comment) {
-            this.commentToDelete = comment;
-            this.showDeleteConfirm = true;
-            nextTick(() => {
-                this.$refs.modalContent.focus(); // Focus on the modal content
-            });
+        async deleteComment(commentId) {
+            const url = '/comment/dislike';
+            const params = `commentid=${commentId}`;
+            await fetch(`${url}?${params}`);
         },
-        cancelDelete() {
-            setTimeout(() => {
-                this.commentToDelete = null;
-                this.showDeleteConfirm = false;
-            }, 100);
-        },
-        async deleteComment() {
-            const comment = this.commentToDelete;
-            const config = this.prepare_config(comment.id);
-            try {
-                const deleteCommentsResponse = await axios.delete(`${backendLayersAppAddress}/project/comment`, config);
-                const index = this.parsedComments.findIndex(el => el.id === comment.id);
-                if (index !== -1) {
-                    this.parsedComments.splice(index, 1);
-                }
-            } catch (error) {
-                if (error.status === 401) {
-                    this.errorMessage = "You need to log in first.";
-                    this.errorCode = error.status;
-                }
-                else {
-                    this.errorMessage = error.detail;
-                }
-            }
+        isUserComment(username) {
+            return username === '{{user}}';
         },
         showRepliesText(comment) {
             if (comment.showReplies) {
@@ -381,26 +341,5 @@ export default {
 
 .divider-text {
     color: #555555
-}
-
-.modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.7);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background: rgb(27, 27, 27);
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
-    text-align: center;
 }
 </style>

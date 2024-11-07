@@ -4,11 +4,11 @@
       <h2>Login</h2>
       <div>
         <label for="username">Username:</label>
-        <input class="dark-textarea" type="text" id="username" v-model="username" required />
+        <input class="dark-textarea" type="text" id="username" v-model="username" required autocomplete="username"/>
       </div>
       <div>
         <label for="password">Password:</label>
-        <input class="dark-textarea" type="password" id="password" v-model="password" required />
+        <input class="dark-textarea" type="password" id="password" v-model="password" required autocomplete="current-password" />
       </div>
       <button class="dark-button" type="submit">Login</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
@@ -18,9 +18,17 @@
 
 <script>
 import { backendMainAppAddress } from '@/config';
+import { getUserinfo } from '@/utils/helpers';
 import axios from 'axios';
 
 export default {
+  name: "LoginView",
+  props: {
+    redirectOnLogin: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       username: '',
@@ -42,7 +50,11 @@ export default {
         });
         const loginToken = loginResponse.data.token;
         sessionStorage.setItem('loginJwt', loginToken);
-        this.$router.push({ name: 'Home' });
+        getUserinfo()
+        window.parent.postMessage({ response: 'Logged In' }, '*');
+        if (this.redirectOnLogin) {
+          this.$router.push({ name: 'Home' });
+        }
       } catch (error) {
         this.errorMessage = error.response.data.detail.msg || 'Login failed. Please try again.';
       }

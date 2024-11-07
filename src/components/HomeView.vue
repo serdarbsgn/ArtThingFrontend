@@ -34,15 +34,15 @@
 
 <script>
 import { backendMainAppAddress } from '@/config';
-import { getUserinfo, removeUserinfo, getUserProjectStats, removeUserstats } from '@/utils/helpers';
+import { username,picture,getUserinfo, removeUserinfo, getUserProjectStats, removeUserProjectstats } from '@/utils/helpers';
 import axios from 'axios';
 import HeaderView from './HeaderView.vue';
 export default {
   components: { HeaderView, },
   data() {
     return {
-      username: '',
-      picture: '',
+      username,
+      picture,
       projectCount: 0,
       projectKarmaTotal: 0,
       projectCommentCount: 0,
@@ -83,8 +83,7 @@ export default {
     async logout() {
       sessionStorage.removeItem('loginJwt');
       removeUserinfo();
-      removeUserstats();
-      this.username = "";
+      removeUserProjectstats();
       this.$router.push({ name: 'Home' });
     },
     async login() {
