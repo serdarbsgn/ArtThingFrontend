@@ -98,7 +98,7 @@ export default {
     pushGames(){
       this.$router.push({ name: 'GameList' });
     },pushCanvasHome(){
-      this.$router.push({name:"CanvasHome"});
+      this.$router.push(`/canvas_home`);
     },
     relocateUserDropdown() {
       const profilePic = this.$refs.pp;
