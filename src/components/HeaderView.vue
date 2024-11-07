@@ -4,7 +4,7 @@
       <ul class="navbar">
         <li><a href="#" @click.prevent="pushHome">Home</a></li>
         <li ref="other"><a @click.prevent="toggleOtherDropdown" @blur="dropdownOtherHide" tabindex="0" href="#">Others</a></li>
-        <li><a href="/games" @click.prevent="pushGames">Games</a></li>
+        <li><a href="/games">Games</a></li>
         <li><a href="/gyrowheel" >GyroWheel APP</a></li>
         <li><a href="#" @click.prevent="pushProjects">Projects</a></li>
         <li v-if="username">
@@ -82,12 +82,6 @@ export default {
     },
     pushUser() {
       this.$router.push({ name: 'CreatorArtbookCover' , params: { "creatorUsername": this.username } })
-    },
-    pushGyrowheel() {
-      this.$router.push({ name: 'Gyrowheel' });
-    },
-    pushGames(){
-      this.$router.push({ name: 'GameList' });
     },
     relocateUserDropdown() {
       const profilePic = this.$refs.pp;
