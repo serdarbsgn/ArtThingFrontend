@@ -94,7 +94,7 @@ const vFocus = focusDirective;
 
 
 <script>
-import { backendMainAppAddress,backendLayersAppAddress } from '@/config';
+import { backendLayersAppAddress } from '@/config';
 import { username } from '@/utils/helpers';
 import { nextTick } from 'vue';
 import axios from 'axios';
@@ -224,7 +224,7 @@ export default {
             const config = this.prepare_config(comment.id)
             try {
                 const likeCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/like`, config);
-                const msg = fetchCommentsResponse.data.msg
+                const msg = likeCommentsResponse.data.msg
                 if (msg == "Liked") {
                     comment.likes += 1;
                     comment.l_d = "Like";
@@ -247,7 +247,7 @@ export default {
             const config = this.prepare_config(comment.id)
             try {
                 const dislikeCommentsResponse = await axios.get(`${backendLayersAppAddress}/project/${this.project_id}/comment/dislike`, config);
-                const msg = fetchCommentsResponse.data.msg
+                const msg = dislikeCommentsResponse.data.msg
                 if (msg == "Disliked") {
                     comment.likes -= 1;
                     comment.l_d = "Dislike";
