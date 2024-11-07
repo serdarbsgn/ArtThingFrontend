@@ -242,7 +242,9 @@ export default {
     padding: 2vh;                
 }
 .profile-picture{
-    max-width: 60vw;
+    max-width: 50vw;
+    max-height: 50vh;
+    object-fit: contain;
 }
 
 </style>

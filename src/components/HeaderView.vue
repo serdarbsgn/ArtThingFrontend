@@ -4,9 +4,9 @@
       <ul class="navbar">
         <li><a href="#" @click.prevent="pushHome">Home</a></li>
         <li ref="other"><a @click.prevent="toggleOtherDropdown" @blur="dropdownOtherHide" tabindex="0" href="#">Others</a></li>
-        <li><a href="#" @click.prevent="pushGames">Games</a></li>
-        <li><a href="#" @click.prevent="pushGyrowheel">GyroWheel APP</a></li>
-        <li><a href="/vue">Projects</a></li>
+        <li><a href="/games" @click.prevent="pushGames">Games</a></li>
+        <li><a href="/gyrowheel" >GyroWheel APP</a></li>
+        <li><a href="#" @click.prevent="pushProjects">Projects</a></li>
         <li v-if="username">
           <img :src="picture" alt="Profile Picture" class="profile-pic" ref="pp" @click.prevent="toggleUserDropdown"
             @blur="dropdownUserHide" tabindex="0">
@@ -20,17 +20,17 @@
       <div v-if="username" v-show="dropdownUserVisible">
         <ul class="dropdown-menu" ref="dropdownUser">
           <li><a href="#" @click.prevent="pushUser">{{ username }}</a></li>
-          <li><a href="#" @click.prevent="pushCart">Your Cart</a></li>
-          <li><a href="#" @click.prevent="pushOrders">Your Orders</a></li>
+          <li><a href="/cart" >Your Cart</a></li>
+          <li><a href="/orders">Your Orders</a></li>
           <li><a href="#" @click.prevent="logout">Logout</a></li>
         </ul>
       </div>
       <div v-show="dropdownOtherVisible">
         <ul class="dropdown-menu" ref="dropdownOther">
-          <li><a href="#" @click.prevent="pushCanvasHome">Home??</a></li>
-          <li><a href="#" @click.prevent="pushForum">Forum</a></li>
-          <li><a href="#" @click.prevent="pushMarket">Marketplace (Not Real)</a></li>
-          <li><a href="/docs">Api Docs</a></li>
+          <li><a href="/canvas_home">Home??</a></li>
+          <li><a href="/forum" >Forum</a></li>
+          <li><a href="/market" >Marketplace (Not Real)</a></li>
+          <li><a href="/project/docs">Api Docs</a></li>
         </ul>
       </div>
       <div v-show="dropdownLoginVisible">
@@ -74,31 +74,20 @@ export default {
         this.dropdownUserVisible = false;
       }, 200);
     },
-    pushForum() {
-      this.$router.push({ name: "ForumList" })
-    },
-    pushCart() {
-      this.$router.push({ name: "CartView" })
-    },
-    pushOrders() {
-      this.$router.push({ name: "OrderView" })
-    },
-    pushMarket() {
-      this.$router.push({ name: "MarketView" })
+    pushProjects() {
+      this.$router.push({ name: "ProjectList" })
     },
     pushHome() {
       this.$router.push({ name: 'Home' });
     },
     pushUser() {
-      this.$router.push({ name: 'User' });
+      this.$router.push({ name: 'CreatorArtbookCover' , params: { "creatorUsername": this.username } })
     },
     pushGyrowheel() {
       this.$router.push({ name: 'Gyrowheel' });
     },
     pushGames(){
       this.$router.push({ name: 'GameList' });
-    },pushCanvasHome(){
-      this.$router.push(`/canvas_home`);
     },
     relocateUserDropdown() {
       const profilePic = this.$refs.pp;
