@@ -1,4 +1,5 @@
 <template>
+  <HeaderView v-if="!isLoading" />
   <div class="centered-content">
     <h1>Project List</h1>
     <ul class="project-list">
@@ -24,7 +25,7 @@ import { ref, onMounted } from 'vue';
 import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { backendLayersAppAddress } from '@/config';
-
+import HeaderView from './HeaderView.vue';
 const projects = ref([]);
 const router = useRouter();
 

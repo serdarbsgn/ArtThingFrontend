@@ -1,4 +1,5 @@
 <template>
+  <HeaderView v-if="!isLoading" />
   <p v-if="isLoading">Loading...</p>
   <div v-if="!isLoading">
     <h1><i>{{ title }}</i> by <a href=# @click="navigateToCreator(creator)">{{ creator }}</a></h1>
@@ -40,9 +41,10 @@ import axios from 'axios';
 import noUiSlider from 'nouislider';
 import { backendLayersAppAddress } from '@/config';
 import CommentView from './CommentView.vue';
+import HeaderView from './HeaderView.vue';
 export default {
   components: {
-    CommentView,
+    CommentView,HeaderView
   },
   props: {
     projectName: {

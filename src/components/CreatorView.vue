@@ -1,4 +1,5 @@
 <template>
+  <HeaderView v-if="!isLoading" />
   <div class="container">
     <div ref="page" class="page-content">
       <h1>This will be the page to show user with the username {{ creatorUsername }}</h1>
@@ -12,8 +13,9 @@
 import { backendMainAppAddress } from '@/config';
 import { backendLayersAppAddress } from '@/config';
 import axios from 'axios';
-
+import HeaderView from './HeaderView.vue';
 export default {
+  omponents: { HeaderView, },
   props: {
     creatorUsername: {
       type: String,

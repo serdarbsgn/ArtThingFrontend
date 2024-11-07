@@ -1,6 +1,7 @@
 <template>
+  <HeaderView v-if="!isLoading" />
   <div class="centered-content">
-    <HeaderView v-if="!isLoading" :parentView="$route.name" @logout="logout"/>
+    
     <p v-if="isLoading">Loading...</p>
     <div v-if="username">
       <h1>Welcome {{ username }}, to the Home Page!</h1>
