@@ -2,7 +2,7 @@
   <header>
     <nav>
       <ul class="navbar">
-        <li><a href="#" @click.prevent="pushHome">Home</a></li>
+        <li><a href="/" >Home</a></li>
         <li ref="other"><a @click.prevent="toggleOtherDropdown" @blur="dropdownOtherHide" tabindex="0" href="#">Others</a></li>
         <li><a href="/games">Games</a></li>
         <li><a href="/gyrowheel" >GyroWheel APP</a></li>
@@ -76,9 +76,6 @@ export default {
     },
     pushProjects() {
       this.$router.push({ name: "ProjectList" })
-    },
-    pushHome() {
-      this.$router.push({ name: 'Home' });
     },
     pushUser() {
       this.$router.push({ name: 'CreatorArtbookCover' , params: { "creatorUsername": this.username } })
