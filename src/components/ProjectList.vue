@@ -17,6 +17,7 @@
       </li>
     </ul>
   </div>
+  <FooterView/>
 </template>
 
 
@@ -26,6 +27,7 @@ import axios from 'axios';
 import { useRouter } from 'vue-router';
 import { backendLayersAppAddress } from '@/config';
 import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 const projects = ref([]);
 const router = useRouter();
 

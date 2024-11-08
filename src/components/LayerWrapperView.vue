@@ -22,6 +22,7 @@
             </div>
         </transition>
     </div>
+    <FooterView/>
 </template>
 
 <script>
@@ -29,9 +30,10 @@ import LayerView from './LayerView.vue';
 import axios from 'axios';
 import { backendLayersAppAddress, backendMainAppAddress } from '@/config';
 import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 export default {
     components: {
-        LayerView,HeaderView
+        LayerView,HeaderView,FooterView
     },
     props: {
         creatorUsername: {

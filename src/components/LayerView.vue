@@ -33,6 +33,7 @@
       </div>
     </div>
   </div>
+  <FooterView v-if="!headerHide"/>
 </template>
 <script>
 import axios from 'axios';
@@ -41,9 +42,10 @@ import noUiSlider from 'nouislider';
 import { backendLayersAppAddress } from '@/config';
 import CommentView from './CommentView.vue';
 import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 export default {
   components: {
-    CommentView,HeaderView
+    CommentView,HeaderView,FooterView
   },
   props: {
     projectName: {

@@ -31,6 +31,7 @@
     </div>
     <a href="#" @click.prevent="projects">Click Here For Projects</a>
   </div>
+  <FooterView/>
 </template>
 
 <script>
@@ -38,8 +39,9 @@ import { backendMainAppAddress } from '@/config';
 import { username,picture,getUserinfo, removeUserinfo, getUserProjectStats, removeUserProjectstats } from '@/utils/helpers';
 import axios from 'axios';
 import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 export default {
-  components: { HeaderView, },
+  components: { HeaderView,FooterView },
   data() {
     return {
       username,

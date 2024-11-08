@@ -7,6 +7,7 @@
     <button @click="turnPage">Turn Page</button>
     <button @click="resetPage">Reset</button>
   </div>
+  <FooterView/>
 </template>
 
 <script>
@@ -14,8 +15,9 @@ import { backendMainAppAddress } from '@/config';
 import { backendLayersAppAddress } from '@/config';
 import axios from 'axios';
 import HeaderView from './HeaderView.vue';
+import FooterView from './FooterView.vue';
 export default {
-  omponents: { HeaderView, },
+  components: { HeaderView,FooterView },
   props: {
     creatorUsername: {
       type: String,
