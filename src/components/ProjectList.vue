@@ -1,5 +1,5 @@
 <template>
-  <HeaderView v-if="!isLoading" />
+  <HeaderView />
   <div class="centered-content">
     <h1>Project List</h1>
     <ul class="project-list">

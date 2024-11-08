@@ -61,6 +61,9 @@ export default {
     watch: {
         async projectName() {
             this.isLoading = false;
+            if(this.projectName === undefined){
+            this.currentProjectIndex = -1;
+        }
         }
     },
     async mounted() {
