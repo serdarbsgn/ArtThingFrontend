@@ -138,7 +138,7 @@ export default {
   align-items: center;
   justify-content: center;
   text-align: center;
-  min-height: 100vh;
+  min-height: 80vh;
 }
 .picture{
   max-width: 20vw;
