@@ -33,7 +33,8 @@
       </div>
     </div>
   </div>
-  <FooterView v-if="!headerHide"/>
+  <br>
+  <FooterView />
 </template>
 <script>
 import axios from 'axios';

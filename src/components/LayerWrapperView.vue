@@ -18,11 +18,12 @@
                     <h3>Contains {{ projectCount }} projects.</h3>
                     <h4>Cumulative Likes: {{ projectKarmaTotal }}</h4>
                     <h4>Joined at: {{ creatorJoinDate }}</h4>
+                    <FooterView/>
                 </div>
             </div>
         </transition>
     </div>
-    <FooterView/>
+    
 </template>
 
 <script>
