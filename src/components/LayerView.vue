@@ -5,7 +5,6 @@
     <h1><i>{{ title }}</i> by <a href=# @click="navigateToCreator(creator)">{{ creator }}</a></h1>
     <div ref="page" class="reactive-location" :class="{ vertical: isVertical }">
       <div>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/noUiSlider/15.8.0/nouislider.min.css">
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <canvas ref="canvas" width="0" height="0"></canvas>
         <div ref="slider"></div>
@@ -35,9 +34,9 @@
     </div>
   </div>
 </template>
-
 <script>
 import axios from 'axios';
+import "@/assets/nouislider.css";
 import noUiSlider from 'nouislider';
 import { backendLayersAppAddress } from '@/config';
 import CommentView from './CommentView.vue';
