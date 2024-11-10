@@ -1,5 +1,5 @@
 <template>
-  <HeaderView v-if="!isLoading" />
+  <HeaderView v-if="!isLoading" ref="headerView"/>
   <div class="centered-content">
     
     <p v-if="isLoading">Loading...</p>
@@ -90,7 +90,7 @@ export default {
       this.$router.push({ name: 'Home' });
     },
     async login() {
-      this.$router.push({ name: 'Login' })
+      this.$refs.headerView.toggleLoginDropdown();
     },
     async register() {
       this.$router.push({ name: 'Register' })

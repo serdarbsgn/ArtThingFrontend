@@ -13,6 +13,7 @@
       <button class="dark-button" type="submit">Login</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
     </form>
+    <a href="#" @click.prevent="loginWithGoogle">Login using Google</a>
   </div>
 </template>
 
@@ -34,6 +35,7 @@ export default {
       username: '',
       password: '',
       errorMessage: '',
+
     };
   },
   methods: {
@@ -59,6 +61,23 @@ export default {
         this.errorMessage = error.response.data.detail.msg || 'Login failed. Please try again.';
       }
     },
+    async loginWithGoogle() {
+      let currentUrl = window.location.pathname;
+      if (currentUrl === "/login" || currentUrl === "/register") {
+        currentUrl = "/";
+      }
+      const redirectUrl = `/api/google-register?url=${encodeURIComponent(currentUrl)}`;
+      if (this.inIframe) {
+        window.parent.location.href = redirectUrl;
+      } else {
+        window.location.href = redirectUrl;
+      }
+    }
+  },
+  computed: {
+    inIframe() {
+      return window.top !== window.self;
+    }
   },
 };
 </script>
