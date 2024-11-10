@@ -68,8 +68,8 @@
                         </a>
                     </template>
                     <template v-if="comment.replies > 0">
-                        <div :style="{ marginLeft: margin_left + '%' }">
-                            <CommentView v-if="comment.showReplies" :project_id="project_id" :parent_id="comment.id" />
+                        <div :style="{ marginLeft: margin_left + '%' }" v-if="comment.showReplies">
+                            <CommentView :project_id="project_id" :parent_id="comment.id" />
                         </div>
                     </template>
                 </div>
@@ -111,6 +111,10 @@ export default {
             type: Number,
             default: 0
         },
+        page:{
+            type:Number,
+            default:0
+        },
         margin_left: {
             type: Number,
             default: 2
@@ -140,6 +144,9 @@ export default {
     },
     methods: {
         async fetch_replies(parent_id, page) {
+            if(this.parsedComments.length > 0){
+                return;
+            }
             this.errorMessage = '';
             const token = sessionStorage.getItem('loginJwt');
             try {
@@ -170,6 +177,11 @@ export default {
         },
         async submitReply(parentComment = { id: 0 }) {
             const token = sessionStorage.getItem('loginJwt');
+            if(!token){//prevent sending request to backend if jwt doesnt exist.
+                this.errorMessage = "You need to log in first.";
+                this.errorCode = 401;
+                return;
+            }
             const replyInput = document.getElementById(`reply-content-${parentComment.id}`);
             const replyContent = replyInput.value;
             const data = {
@@ -183,10 +195,22 @@ export default {
                 }
             };
             try {
-                await axios.post(`${backendLayersAppAddress}/project/comment`, data, config);
+                const reply = await axios.post(`${backendLayersAppAddress}/project/comment`, data, config);
                 replyInput.value = '';
                 replyInput.style.height = 'auto';
-                this.fetch_replies(this.parent_id, 0);
+                if(parentComment.hasOwnProperty('replies')){//this is for root comments
+                    parentComment.replies +=1;
+                    parentComment.showReplies = false;
+                }else{//this is for reply of a comment.
+                    data["id"] = reply.data.id;
+                    data["username"] = this.username;
+                    data["changed_at"] = Date.now();
+                    data["showReplies"] = false;
+                    data["replyFieldText"] = "Reply"
+                    data["likes"] = 0;
+                    data["replies"] = 0;
+                    this.parsedComments.push(data)
+                }
             } catch (error) {
                 if (error.status === 401) {
                     this.errorMessage = "You need to log in first.";

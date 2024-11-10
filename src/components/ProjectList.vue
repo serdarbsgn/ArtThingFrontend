@@ -96,7 +96,7 @@ li:hover {
   flex-direction: column;
   justify-content: center;
   text-align: center;
-  min-height: 100vh;
+  min-height: 90vh;
 }
 .dark-textarea {
     margin-top: auto;

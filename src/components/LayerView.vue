@@ -34,7 +34,7 @@
     </div>
   </div>
   <br>
-  <FooterView />
+  <FooterView/>
 </template>
 <script>
 import axios from 'axios';
