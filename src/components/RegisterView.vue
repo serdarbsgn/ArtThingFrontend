@@ -26,6 +26,12 @@ import { backendMainAppAddress } from '@/config';
 import axios from 'axios';
 
 export default {
+  props: {
+    redirectOnLogin: {
+      type: Boolean,
+      default: true,
+    },
+  },
   data() {
     return {
       username: '',
@@ -47,7 +53,14 @@ export default {
           password: this.password,
           token: jwtToken,
         });
-        this.$router.push({ name: 'Login' });
+        if(this.redirectOnLogin){
+          this.$router.push({ name: 'Login' });
+        }else{
+          this.$emit("registerSuccess");
+        }
+        this.username = "";
+        this.email="";
+        this.password = "";
       } catch (error) {
         this.errorMessage = error.response.data.detail[0].loc[1] + error.response.data.detail[0].msg || 'Register failed. Please try again.';
       }
