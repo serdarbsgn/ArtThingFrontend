@@ -4,15 +4,15 @@
       <h2>Register</h2>
       <div>
         <label for="username">Username:</label>
-        <input class="dark-textarea" type="text" id="username" v-model="username" required />
+        <input class="dark-textarea" type="text" id="usernameRegister" v-model="username" required />
       </div>
       <div>
         <label for="email">Email:</label>
-        <input class="dark-textarea" type="email" id="email" v-model="email" required />
+        <input class="dark-textarea" type="email" id="emailRegister" v-model="email" required />
       </div>
       <div>
         <label for="password">Password:</label>
-        <input class="dark-textarea" type="password" id="password" v-model="password" required />
+        <input class="dark-textarea" type="password" id="passwordRegister" v-model="password" required />
       </div>
       <button class="dark-button" type="submit">Register</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
