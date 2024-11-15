@@ -12,7 +12,7 @@
       </div>
       <div>
         <label for="password">Password:</label>
-        <input class="dark-textarea" type="password" id="passwordRegister" v-model="password" required />
+        <input class="dark-textarea" type="password" id="passwordRegister" v-model="password" required autocomplete="off"/>
       </div>
       <button class="dark-button" type="submit">Register</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
