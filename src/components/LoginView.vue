@@ -3,12 +3,12 @@
     <form @submit.prevent="login">
       <h2>Login</h2>
       <div>
-        <label for="username">Username:</label>
-        <input class="dark-textarea" type="text" id="username" v-model="username" required autocomplete="username"/>
+        <label for="usernameLogin">Username:</label>
+        <input class="dark-textarea" type="text" id="usernameLogin" v-model="username" required autocomplete="username"/>
       </div>
       <div>
-        <label for="password">Password:</label>
-        <input class="dark-textarea" type="password" id="password" v-model="password" required autocomplete="current-password" />
+        <label for="passwordLogin">Password:</label>
+        <input class="dark-textarea" type="password" id="passwordLogin" v-model="password" required autocomplete="current-password" />
       </div>
       <button class="dark-button" type="submit">Login</button>
       <div v-if="errorMessage" class="error">{{ errorMessage }}</div>

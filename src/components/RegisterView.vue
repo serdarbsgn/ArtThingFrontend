@@ -3,15 +3,15 @@
     <form @submit.prevent="login">
       <h2>Register</h2>
       <div>
-        <label for="username">Username:</label>
+        <label for="usernameRegister">Username:</label>
         <input class="dark-textarea" type="text" id="usernameRegister" v-model="username" required />
       </div>
       <div>
-        <label for="email">Email:</label>
+        <label for="emailRegister">Email:</label>
         <input class="dark-textarea" type="email" id="emailRegister" v-model="email" required />
       </div>
       <div>
-        <label for="password">Password:</label>
+        <label for="passwordRegister">Password:</label>
         <input class="dark-textarea" type="password" id="passwordRegister" v-model="password" required autocomplete="off"/>
       </div>
       <button class="dark-button" type="submit">Register</button>

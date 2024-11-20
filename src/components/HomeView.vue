@@ -1,5 +1,5 @@
 <template>
-  <HeaderView v-if="!isLoading" ref="headerView"/>
+  <HeaderView ref="headerView"/>
   <div class="centered-content">
     
     <p v-if="isLoading">Loading...</p>
@@ -87,13 +87,12 @@ export default {
       sessionStorage.removeItem('loginJwt');
       removeUserinfo();
       removeUserProjectstats();
-      this.$router.push({ name: 'Home' });
     },
     async login() {
       this.$refs.headerView.toggleLoginDropdown();
     },
     async register() {
-      this.$router.push({ name: 'Register' })
+      this.$refs.headerView.toggleRegisterDropdown();
     },
     async projects() {
       this.$router.push({ name: 'ProjectList' })

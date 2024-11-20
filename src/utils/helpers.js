@@ -6,7 +6,7 @@ import { backendLayersAppAddress } from '@/config';
 // Define reactive variables
 export const username = ref(sessionStorage.getItem('username') || '');
 export const picture = ref(sessionStorage.getItem('picture') || '');
-
+export const dropdownLoginVisible = ref(false);
 // Function to get user info and set reactive variables
 export async function getUserinfo() {
   const storedUsername = sessionStorage.getItem('username');
