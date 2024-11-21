@@ -11,8 +11,8 @@
         <br>
         <div class="right-container">
           <template v-if="variations > 0">
+            <button v-show="currentVariant!=0" class="dark-button" @click.prevent="callOriginal">Original</button>
             <button class="dark-button" @click.prevent="callPreviousVariant">Previous Variant</button>
-            <button class="dark-button" @click.prevent="callOriginal">Original</button>
             <button class="dark-button" @click.prevent="callNextVariant">Next Variant</button>
           </template>
           <a href="#" @click.prevent="projects">Back to Projects</a>
