@@ -10,6 +10,11 @@
         <div ref="slider"></div>
         <br>
         <div class="right-container">
+          <template v-if="variations > 0">
+            <button class="dark-button" @click.prevent="callPreviousVariant">Previous Variant</button>
+            <button class="dark-button" @click.prevent="callOriginal">Original</button>
+            <button class="dark-button" @click.prevent="callNextVariant">Next Variant</button>
+          </template>
           <a href="#" @click.prevent="projects">Back to Projects</a>
           <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
           <h3 class="likes"> <a href="#" :class="['like-button', { active: userLike === 'Like' }]"
@@ -34,7 +39,7 @@
     </div>
   </div>
   <br>
-  <FooterView/>
+  <FooterView />
 </template>
 <script>
 import axios from 'axios';
@@ -46,13 +51,13 @@ import HeaderView from './HeaderView.vue';
 import FooterView from './FooterView.vue';
 export default {
   components: {
-    CommentView,HeaderView,FooterView
+    CommentView, HeaderView, FooterView
   },
   props: {
     projectName: {
       type: String,
       required: true,
-    },headerHide: {
+    }, headerHide: {
       type: Boolean,
       default: false
     }
@@ -77,7 +82,9 @@ export default {
       slider_min: 0,
       slider_max: 0,
       errorMessage: "",
-      isLoading: true
+      isLoading: true,
+      variations: 0,
+      currentVariant: 0
     };
   },
   watch: {
@@ -87,24 +94,28 @@ export default {
       this.title = "";
       this.creator = "";
       this.creator_id = "";
-      this.content="";
+      this.content = "";
       this.likes = 0;
       this.created_at = null;
       this.userLike = null;
       this.viewingUser = null;
       this.isVertical = false;
       this.slider_min = 0;
-      this.slider_max=0;
-      this.errorMessage="";
+      this.slider_max = 0;
+      this.errorMessage = "";
       this.isLoading = true;
       this.scale = 1;
       this.maxWidth = 0;
       this.maxHeight = 0;
+      this.variations = 0;
+      this.currentVariant = 0;
       await this.getLayerViewPageInfo();
       this.layerCount = this.layer_pos.length;
       this.loadAllImages();
       window.addEventListener('resize', this.handle_resize);
-    },
+    }, currentVariant() {
+      this.loadAllImages(this.currentVariant);
+    }
   },
   async mounted() {
     await this.getLayerViewPageInfo();
@@ -142,6 +153,8 @@ export default {
           minute: '2-digit',
         });
         this.userLike = response.data.user_like;
+        this.variations = response.data.variations || 0;
+        this.currentVariant = 0;
       } catch (error) {
         this.errorMessage = 'Unable to load project data. Please try again later.';
       }
@@ -187,18 +200,41 @@ export default {
         this.errorMessage = 'Log in first to leave a like/dislike.';
       }
     },
-    loadImage(index) {
+    loadImage(index, variant = 0) {
       return new Promise((resolve) => {
         const img = new Image();
-        img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}.png`;
+        if (index == 0 || variant == 0) {
+          img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}.png`;
+        } else if (variant > 0) {
+          img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}_${variant}.png`;
+        }
         img.onload = () => resolve(img);
       });
     },
-    async loadAllImages() {
+    callNextVariant() {
+      const nextVariant = this.currentVariant + 1;
+      if (nextVariant > this.variations) {
+        this.currentVariant = 0;
+      } else {
+        this.currentVariant = nextVariant;
+      }
+    },
+    callPreviousVariant() {
+      const nextVariant = this.currentVariant - 1;
+      if (nextVariant < 0) {
+        this.currentVariant = this.variations;
+      } else {
+        this.currentVariant = nextVariant;
+      }
+    },
+    callOriginal() {
+      this.currentVariant = 0;
+    },
+    async loadAllImages(variant = 0) {
       const imagePromises = [];
       for (let i = 0; i < this.layerCount; i++) {
         imagePromises.push(
-          this.loadImage(i).then(img => {
+          this.loadImage(i, variant).then(img => {
             this.images[i] = img;
             this.maxWidth = Math.max(this.maxWidth, img.width + this.layer_pos[i][0]);
             this.maxHeight = Math.max(this.maxHeight, img.height + this.layer_pos[i][1]);
@@ -210,10 +246,10 @@ export default {
       this.adjust_canvas_w_slider();
       this.adjust_orientation();
       this.setupSlider();
-      
+
     },
     getContentMaxHeight() {
-      const scaledHeight = this.maxHeight * this.scale ;
+      const scaledHeight = this.maxHeight * this.scale;
       let availableHeight = window.innerHeight - scaledHeight;
       if (this.isVertical) {
         availableHeight -= availableHeight * 0.2;// mind the gap (margin.)
@@ -396,5 +432,20 @@ div.noUi-target .noUi-handle:hover {
 
 .content-container::-webkit-scrollbar-thumb:hover {
   background-color: #6e6e6e;
+}
+.dark-button {
+    font-size: 17px;
+    background-color: #0c4511;
+    color: #bdbdbd;
+    border: 1px solid #555;
+    margin: 7px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.dark-button:hover {
+    background-color: #14631a;
+    color: #ffffff;
+    border-color: #777;
 }
 </style>
