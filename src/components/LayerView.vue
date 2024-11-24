@@ -10,11 +10,6 @@
         <div ref="slider"></div>
         <br>
         <div class="right-container">
-          <template v-if="variations > 0">
-            <button v-show="currentVariant!=0" class="dark-button" @click.prevent="callOriginal">Original</button>
-            <button class="dark-button" @click.prevent="callPreviousVariant">Previous Variant</button>
-            <button class="dark-button" @click.prevent="callNextVariant">Next Variant</button>
-          </template>
           <a href="#" @click.prevent="projects">Back to Projects</a>
           <div v-if="errorMessage" class="error">{{ errorMessage }}</div>
           <h3 class="likes"> <a href="#" :class="['like-button', { active: userLike === 'Like' }]"
@@ -26,6 +21,25 @@
               <span class="material-icons">thumb_down</span>
             </a>
           </h3>
+        </div>
+        <div v-if="variations > 0">
+          <button class="dark-button" @click.prevent="callPreviousVariant">Prev Variant</button>
+          <button class="dark-button" @click.prevent="callNextVariant">Next Variant</button>
+          <template v-if="currentVariant != 0 || variationsPerLayer.some(layer => layer !== 0)">
+            <button class="dark-button" @click.prevent="callOriginal">Original</button>
+            <p>Note: Image now contains AI generated variant, please don't judge original content according to it.</p>
+          </template>
+          <template v-else>
+            <p>Try the slider and buttons to change how image looks.</p>
+          </template>
+          <div v-for="layer, index in variationsPerLayer">
+            <div v-if="index + 1 >= slider_min && index + 1 <= slider_max" style="display: flex;">
+              <h3>Layer #{{ index + 1 }}</h3>
+              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, -1)">Next</button>
+              <h3>Variant# {{ variationsPerLayer[index] }}</h3>
+              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, +1)">Prev</button>
+            </div>
+          </div>
         </div>
       </div>
       <div class="content-container" :class="{ vertical: isVertical }"
@@ -84,7 +98,8 @@ export default {
       errorMessage: "",
       isLoading: true,
       variations: 0,
-      currentVariant: 0
+      currentVariant: 0,
+      variationsPerLayer: []
     };
   },
   watch: {
@@ -111,16 +126,17 @@ export default {
       this.currentVariant = 0;
       await this.getLayerViewPageInfo();
       this.layerCount = this.layer_pos.length;
-      this.loadAllImages();
+      this.setup();
       window.addEventListener('resize', this.handle_resize);
     }, currentVariant() {
-      this.loadAllImages(this.currentVariant);
+      this.variationsPerLayer = Array((this.layer_pos.length) - 1).fill(this.currentVariant);//-1 since no variations for bottom layer.
+      this.setup(this.currentVariant);
     }
   },
   async mounted() {
     await this.getLayerViewPageInfo();
     this.layerCount = this.layer_pos.length;
-    this.loadAllImages();
+    this.setup();
     window.addEventListener('resize', this.handle_resize);
   },
   beforeUnmount() {
@@ -155,6 +171,7 @@ export default {
         this.userLike = response.data.user_like;
         this.variations = response.data.variations || 0;
         this.currentVariant = 0;
+        this.variationsPerLayer = Array((this.layer_pos.length) - 1).fill(0);//-1 since no variations for bottom layer.
       } catch (error) {
         this.errorMessage = 'Unable to load project data. Please try again later.';
       }
@@ -228,25 +245,58 @@ export default {
       }
     },
     callOriginal() {
+      if (this.currentVariant === 0) {
+        this.variationsPerLayer = Array((this.layer_pos.length) - 1).fill(this.currentVariant);
+        this.drawLayersVariationsArray();
+      }
       this.currentVariant = 0;
     },
-    async loadAllImages(variant = 0) {
+    async loadAllImagesOfVariant(variant) {
+      if (!this.images[variant]) {
+        this.images[variant] = [];
+      }
       const imagePromises = [];
       for (let i = 0; i < this.layerCount; i++) {
-        imagePromises.push(
-          this.loadImage(i, variant).then(img => {
-            this.images[i] = img;
-            this.maxWidth = Math.max(this.maxWidth, img.width + this.layer_pos[i][0]);
-            this.maxHeight = Math.max(this.maxHeight, img.height + this.layer_pos[i][1]);
-          })
-        );
+        if (!this.images[variant][i]) {
+          imagePromises.push(this.loadImageOfVariant(i, variant));
+        }
       }
       this.isLoading = false;
-      await Promise.all(imagePromises);
+      if (imagePromises.length > 0) {
+        await Promise.all(imagePromises);
+      }
       this.adjust_canvas_w_slider();
       this.adjust_orientation();
       this.setupSlider();
 
+      if (this.images[variant].length > 0) {
+        this.drawLayersVariationsArray(this.slider_min, this.slider_max);
+      }
+    },
+    async loadImageOfVariant(index, variant) {
+      if (this.images[variant] === undefined) {
+        this.images[variant] = [];
+      }
+      if (variant !== 0 && index === 0) {
+        this.images[variant][index] = this.images[0][0];
+        return;
+      }
+      if (this.images[variant][index] === undefined) {
+        const img = await this.loadImage(index, variant);
+        this.images[variant][index] = img;
+        this.maxWidth = Math.max(this.maxWidth, img.width + this.layer_pos[index][0]);
+        this.maxHeight = Math.max(this.maxHeight, img.height + this.layer_pos[index][1]);
+      }
+    },
+    async setup(variant = 0) {
+      this.isLoading = false;
+      await this.loadAllImagesOfVariant(variant);
+      this.adjust_canvas_w_slider();
+      this.adjust_orientation();
+      this.setupSlider();
+      if (this.images[variant].length > 0) {
+        this.drawLayersVariationsArray(this.slider_min, this.slider_max)
+      }
     },
     getContentMaxHeight() {
       const scaledHeight = this.maxHeight * this.scale;
@@ -260,7 +310,6 @@ export default {
       const canvas = this.$refs.canvas;
       const aspectRatio = this.maxWidth / this.maxHeight;
       const screenAspectRatio = window.innerWidth / window.innerHeight;
-
       if (aspectRatio > screenAspectRatio) {
         canvas.width = window.innerWidth * 0.8;
         this.scale = canvas.width / this.maxWidth;
@@ -284,21 +333,53 @@ export default {
     },
     handle_resize() {
       this.adjust_canvas_w_slider();
-      this.drawLayers(this.slider_min, this.slider_max);
+      this.drawLayersVariationsArray(this.slider_min, this.slider_max);
       this.adjust_orientation();
-    }
-    ,
-    drawLayers(min, max) {
+    },
+    async changeVariationPerLayer(index, step) {
+      const next = this.variationsPerLayer[index] + step;
+      if (next < 0) {
+        this.variationsPerLayer[index] = this.variations;
+      } else if (next > this.variations) {
+        this.variationsPerLayer[index] = 0;
+      } else {
+        this.variationsPerLayer[index] = next;
+      }
+      const v = this.variationsPerLayer[index];
+      await this.loadImageOfVariant(index + 1, v);//+1 since no variations for bottom layer.
+      this.drawLayersVariationsArray();
+    },
+    getClearCtx() {
       const canvas = this.$refs.canvas;
       const ctx = canvas.getContext('2d');
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      return ctx;
+    }
+    , drawLayer(index, img, ctx) {
+      const x = this.layer_pos[index][0] * this.scale;
+      const y = this.layer_pos[index][1] * this.scale;
+      const width = img.width * this.scale;
+      const height = img.height * this.scale;
+      ctx.drawImage(img, x, y, width, height);
+    }
+    ,
+    drawLayersVariationsArray() {
+      const ctx = this.getClearCtx();
+      for (let i = this.slider_min; i <= this.slider_max; i++) {
+        let img;
+        if (i === 0) {
+          img = this.images[0][0];
+        } else {
+          img = this.images[this.variationsPerLayer[i - 1]][i];
+        }
+        this.drawLayer(i, img, ctx);
+      }
+    },
+    drawLayers(min, max) {
+      const ctx = this.getClearCtx();
       for (let i = min; i <= max; i++) {
-        const img = this.images[i];
-        const x = this.layer_pos[i][0] * this.scale;
-        const y = this.layer_pos[i][1] * this.scale;
-        const width = img.width * this.scale;
-        const height = img.height * this.scale;
-        ctx.drawImage(img, x, y, width, height);
+        const img = this.images[this.currentVariant][i];
+        this.drawLayer(i, img, ctx);
       }
     },
     setupSlider() {
@@ -320,7 +401,7 @@ export default {
         const [min, max] = values.map(Number);
         this.slider_min = min;
         this.slider_max = max;
-        this.drawLayers(min, max);
+        this.drawLayersVariationsArray(min, max);
       });
     },
     async projects() {
@@ -433,19 +514,20 @@ div.noUi-target .noUi-handle:hover {
 .content-container::-webkit-scrollbar-thumb:hover {
   background-color: #6e6e6e;
 }
+
 .dark-button {
-    font-size: 17px;
-    background-color: #0c4511;
-    color: #bdbdbd;
-    border: 1px solid #555;
-    margin: 7px;
-    border-radius: 5px;
-    cursor: pointer;
+  font-size: 17px;
+  background-color: #0c4511;
+  color: #bdbdbd;
+  border: 1px solid #555;
+  margin: 7px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .dark-button:hover {
-    background-color: #14631a;
-    color: #ffffff;
-    border-color: #777;
+  background-color: #14631a;
+  color: #ffffff;
+  border-color: #777;
 }
 </style>
