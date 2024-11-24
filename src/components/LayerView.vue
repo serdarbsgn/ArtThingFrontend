@@ -35,9 +35,9 @@
           <div v-for="layer, index in variationsPerLayer">
             <div v-if="index + 1 >= slider_min && index + 1 <= slider_max" style="display: flex;">
               <h3>Layer #{{ index + 1 }}</h3>
-              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, -1)">Next</button>
+              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, -1)">Prev</button>
               <h3>Variant# {{ variationsPerLayer[index] }}</h3>
-              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, +1)">Prev</button>
+              <button class="dark-button" @click.prevent="changeVariationPerLayer(index, +1)">Next</button>
             </div>
           </div>
         </div>
