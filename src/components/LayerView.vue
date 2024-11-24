@@ -153,7 +153,7 @@ export default {
         };
         const response = await axios.get(`${backendLayersAppAddress}/project/${this.projectName}`, config);
         this.layer_pos = response.data.images.map(item => {
-          const [, x, y] = item.replace('.png', '').split('_').map(Number);
+          const [, x, y] = item.replace('.webp', '').replace('.png', '').split('_').map(Number);
           return [x, y];
         });
         this.title = response.data.title;
@@ -220,10 +220,14 @@ export default {
     loadImage(index, variant = 0) {
       return new Promise((resolve) => {
         const img = new Image();
-        if (index == 0 || variant == 0) {
+        if (variant == 0){
           img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}.png`;
-        } else if (variant > 0) {
-          img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}_${variant}.png`;
+        }
+        else if (variant > 0) {
+          if (index == 0) {
+          img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}.webp`;
+        } 
+          img.src = `${backendLayersAppAddress}/image/${this.projectName}/${index}_${this.layer_pos[index][0]}_${this.layer_pos[index][1]}_${variant}.webp`;
         }
         img.onload = () => resolve(img);
       });

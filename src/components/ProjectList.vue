@@ -4,7 +4,7 @@
     <h1>Project List</h1>
     <ul class="project-list">
       <li v-for="project in projects" :key="project.id" @click="navigateToProject(project.id)" class="project-item">
-        <img :src="getThumbnailUrl(project.id)" :alt="`Thumbnail for ${project.title}`" class="thumbnail" />
+        <img :srcset="getThumbnailUrl(project.id)" :alt="`Thumbnail for ${project.title}`" class="thumbnail" />
         <div class="project-item-info">
           <h3>{{ project.title }}</h3>
           <p>by {{ project.creator }}</p>
@@ -48,7 +48,7 @@ function navigateToProject(id) {
   router.push({ name: 'Project', params: { "projectName": id } });
 }
 function getThumbnailUrl(id) {
-  return `${backendLayersAppAddress}/image/${id}/thumbnail.png`;
+  return `${backendLayersAppAddress}/image/${id}/thumbnail.png`,`${backendLayersAppAddress}/image/${id}/thumbnail.webp`;
 }
 </script>
 
